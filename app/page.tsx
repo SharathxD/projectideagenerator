@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import ReactMarkdown from 'react-markdown'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -58,13 +57,14 @@ export default function ProjectIdeaGenerator() {
     setProjectIdeas([])
 
     const result = await generateProjectIdeas(domain, techStack, complexity)
-    
-    if (result.success) {
+
+    if (result.success && result.ideas) {
       setProjectIdeas(result.ideas)
     } else {
+      setProjectIdeas([]) // Handle undefined ideas
       setError(result.error || 'An unexpected error occurred')
     }
-    
+
     setIsLoading(false)
   }
 
@@ -254,4 +254,3 @@ export default function ProjectIdeaGenerator() {
     </div>
   )
 }
-
