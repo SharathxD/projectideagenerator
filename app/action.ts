@@ -9,45 +9,46 @@ export async function generateProjectIdeas(domain: string, techStack: string, co
     const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
     const prompt = `Generate 6 different project ideas for the following parameters:
-    Domain: ${domain}
-    Tech Stack/Tools: ${techStack}
-    Complexity Level: ${complexity}
+    - **Domain**: ${domain}
+    - **Tech Stack**: ${techStack}
+    - **Complexity Level**: ${complexity}
 
-    For each project, provide:
-    1. Project Title
-    2. Brief Description (2-3 sentences)
-    3. Key Features (3-5 bullet points)
+    Format each project **exactly like this**:
+    
+    **Project Title**: <Title Here>  
+    **Description**: <Short 2-3 sentence description>  
+    **Key Features**:  
+    - Feature 1  
+    - Feature 2  
+    - Feature 3  
+    - Feature 4  
 
-    Format each project separately and make them distinct from each other.
-    Ensure the projects are practical and aligned with the complexity level.`
+    Separate each project with **three dashes (---)**.`
 
     const result = await model.generateContent(prompt)
     const response = await result.response
     const text = response.text()
 
-    // Split the text into individual projects and parse them
-    const projects = text.split(/Project \d+:/).filter(Boolean).map(project => {
+    // Correctly splitting projects using '---' separator
+    const projects = text.split('---').filter(Boolean).map(project => {
       const lines = project.trim().split('\n')
-      const title = lines[0].trim()
-      const descriptionLines = []
-      const features = []
+      let title = ""
+      let description = ""
+      const features: string[] = []
       let parsingFeatures = false
 
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim()
-        if (line.toLowerCase().startsWith('key features:')) {
+      lines.forEach(line => {
+        line = line.trim()
+        if (line.startsWith("**Project Title**:")) {
+          title = line.replace("**Project Title**:", "").trim()
+        } else if (line.startsWith("**Description**:")) {
+          description = line.replace("**Description**:", "").trim()
+        } else if (line.startsWith("- ")) {
           parsingFeatures = true
-        } else if (parsingFeatures) {
-          if (line.startsWith('-')) {
-            features.push(line.slice(1).trim())
-          }
-        } else if (line) {
-          descriptionLines.push(line)
+          features.push(line.substring(2).trim())  // Extracting bullet points
         }
-      }
+      })
 
-      const description = descriptionLines.join(' ').trim()
-      
       return { title, description, features }
     })
 
@@ -60,4 +61,3 @@ export async function generateProjectIdeas(domain: string, techStack: string, co
     }
   }
 }
-
