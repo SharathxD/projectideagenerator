@@ -8,7 +8,7 @@ export async function generateProjectIdeas(domain: string, techStack: string, co
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" })
 
-    const prompt = `Generate 6 different project ideas for the following parameters:
+    const prompt = `Generate 12 different project ideas for the following parameters:
     - **Domain**: ${domain}
     - **Tech Stack**: ${techStack}
     - **Complexity Level**: ${complexity}
