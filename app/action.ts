@@ -6,7 +6,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
 export async function generateProjectIdeas(domain: string, techStack: string, complexity: string) {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
     const prompt = `Generate 12 different project ideas for the following parameters:
     - **Domain**: ${domain}
